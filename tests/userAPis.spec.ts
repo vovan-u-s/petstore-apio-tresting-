@@ -4,22 +4,22 @@ import { z } from 'zod';
 import { env } from 'process';
 
 const baseURL = `${process.env.BASE_URL}${process.env.API_VERSION}`;
-test.describe('User API tests', () => { 
-         const createUserRequestBody = {
+test.describe('User API tests', () => {
+    const createUserRequestBody = {
 
-            "id": 12312,
-            "username": "TestUserNameSalih123",
-            "firstName": faker.person.firstName(),
-            "lastName": faker.person.lastName(),
-            "email": faker.internet.email(),
-            "password": "Test1234!",
-            "phone": faker.phone.number(),
-            "userStatus": 0
-        }
+        "id": 12312,
+        "username": "TestUserNameSalih123",
+        "firstName": faker.person.firstName(),
+        "lastName": faker.person.lastName(),
+        "email": faker.internet.email(),
+        "password": "Test1234!",
+        "phone": faker.phone.number(),
+        "userStatus": 0
+    }
 
 
     test('create a new user', async ({ request }) => {
-   
+
         const createUserResponse = await request.post(`${baseURL}/user`, {
             data: createUserRequestBody
         })
@@ -49,5 +49,18 @@ test.describe('User API tests', () => {
         const actualGetUserResponseBody = await getUserResponse.json();
         expectedGetUserResponseSchemaZod.parse(actualGetUserResponseBody);
     })
-        
+    test('delete user by username', async ({ request }) => {
+        const username = createUserRequestBody.username;
+        const deleteUserResponse = await request.delete(`${baseURL}/user/${username}`);
+        expect(deleteUserResponse.status()).toBe(200);
+        const expectedDeleteUserResponseSchemaZod = z.object({
+            "code": z.literal(200),
+            "type": z.literal("unknown"),
+            "message": z.literal(username)
+        })
+    
+    const actualDeleteUserResponseBody = await deleteUserResponse.json();
+    expectedDeleteUserResponseSchemaZod.parse(actualDeleteUserResponseBody);
+})
+
 })
