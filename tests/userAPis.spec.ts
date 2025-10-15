@@ -5,9 +5,7 @@ import { env } from 'process';
 
 const baseURL = `${process.env.BASE_URL}${process.env.API_VERSION}`;
 test.describe('User API tests', () => { 
-
-    test('create a new user', async ({ request }) => {
-        const createUserRequestBody = {
+         const createUserRequestBody = {
 
             "id": 12312,
             "username": "TestUserNameSalih123",
@@ -18,6 +16,10 @@ test.describe('User API tests', () => {
             "phone": faker.phone.number(),
             "userStatus": 0
         }
+
+
+    test('create a new user', async ({ request }) => {
+   
         const createUserResponse = await request.post(`${baseURL}/user`, {
             data: createUserRequestBody
         })
@@ -31,7 +33,7 @@ test.describe('User API tests', () => {
         expectedResponseSchemaZod.parse(actualResponseBody);
     })
     test('get user by username', async ({ request }) => {
-        const username = "TestUserNameSalih123";
+        const username = createUserRequestBody.username;
         const getUserResponse = await request.get(`${baseURL}/user/${username}`);
         expect(getUserResponse.status()).toBe(200);
         const expectedGetUserResponseSchemaZod = z.object({
@@ -46,6 +48,6 @@ test.describe('User API tests', () => {
         })
         const actualGetUserResponseBody = await getUserResponse.json();
         expectedGetUserResponseSchemaZod.parse(actualGetUserResponseBody);
-
     })
+        
 })
