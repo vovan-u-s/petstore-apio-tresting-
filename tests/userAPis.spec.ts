@@ -48,6 +48,14 @@ test.describe('User API tests', () => {
         })
         const actualGetUserResponseBody = await getUserResponse.json();
         expectedGetUserResponseSchemaZod.parse(actualGetUserResponseBody);
+        let getUserResponce;
+         for(let i = 0; i < 5; i++){
+            getUserResponce = await request.get(`${baseURL}/user/${username}`);
+            if(getUserResponce.status() === 200){
+                break;
+            }
+            console.log(`Attempt ${i+1} failed, retrying...`);
+        }
     })
     test('delete user by username', async ({ request }) => {
         const username = createUserRequestBody.username;
