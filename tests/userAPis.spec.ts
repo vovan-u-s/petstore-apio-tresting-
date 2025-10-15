@@ -3,7 +3,7 @@ import { fa, faker, Faker } from '@faker-js/faker';
 import { z } from 'zod';
 import { env } from 'process';
 
-
+const baseURL = `${process.env.BASE_URL}${process.env.API_VERSION}`;
 test.describe('User API tests', () => { 
 
     test('create a new user', async ({ request }) => {
@@ -18,7 +18,7 @@ test.describe('User API tests', () => {
             "phone": faker.phone.number(),
             "userStatus": 0
         }
-        const createUserResponse = await request.post(`${process.env.BASE_URL}${process.env.API_VERSION}/user`, {
+        const createUserResponse = await request.post(`${baseURL}/user`, {
             data: createUserRequestBody
         })
         expect(createUserResponse.status()).toBe(200);
@@ -32,7 +32,7 @@ test.describe('User API tests', () => {
     })
     test('get user by username', async ({ request }) => {
         const username = "TestUserNameSalih123";
-        const getUserResponse = await request.get(`${process.env.BASE_URL}${process.env.API_VERSION}/user/${username}`);
+        const getUserResponse = await request.get(`${baseURL}/user/${username}`);
         expect(getUserResponse.status()).toBe(200);
         const expectedGetUserResponseSchemaZod = z.object({
             "id": z.number(),
