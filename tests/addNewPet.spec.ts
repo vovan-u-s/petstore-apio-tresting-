@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { fa, faker } from '@faker-js/faker';
 import { z } from 'zod';
+import { postAPI, getAPI,putAPI,deleteAPI } from '../utils/apiCallHelper';
 
 test.describe('Add New Pet API tests', () => {
     // Construct the base URL from environment variables
@@ -35,8 +36,6 @@ test.describe('Add New Pet API tests', () => {
         status: z.string()
     });
     test('create a new pet', async ({ request }) => {
-     await request.post(`${baseURL}/pet`, {
-            data: createPetRequestBody
+        await postAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
         })
     });
-}); 
