@@ -2,11 +2,12 @@ import { test, expect } from '@playwright/test';
 import { fa, faker, Faker } from '@faker-js/faker';
 import { z } from 'zod';
 import { env } from 'process';
-
+import { getAPI, postAPI, deleteAPI, putAPI } from '../utils/apiCallHelper';
+// Construct the base URL from environment variables
 const baseURL = `${process.env.BASE_URL}${process.env.API_VERSION}`;
+
 test.describe('User API tests', () => {
     const createUserRequestBody = {
-
         "id": 12312,
         "username": "TestUserNameSalih123",
         "firstName": faker.person.firstName(),
@@ -16,8 +17,6 @@ test.describe('User API tests', () => {
         "phone": faker.phone.number(),
         "userStatus": 0
     }
-
-
     test('create a new user', async ({ request }) => {
 
         const createUserResponse = await request.post(`${baseURL}/user`, {
@@ -49,14 +48,15 @@ test.describe('User API tests', () => {
         const actualGetUserResponseBody = await getUserResponse.json();
         expectedGetUserResponseSchemaZod.parse(actualGetUserResponseBody);
         let getUserResponce;
-         for(let i = 0; i < 5; i++){
+        for (let i = 0; i < 5; i++) {
             getUserResponce = await request.get(`${baseURL}/user/${username}`);
-            if(getUserResponce.status() === 200){
+            if (getUserResponce.status() === 200) {
                 break;
             }
-            console.log(`Attempt ${i+1} failed, retrying...`);
+            console.log(`Attempt ${i + 1} failed, retrying...`);
         }
     })
+
     test('delete user by username', async ({ request }) => {
         const username = createUserRequestBody.username;
         const deleteUserResponse = await request.delete(`${baseURL}/user/${username}`);
@@ -66,9 +66,9 @@ test.describe('User API tests', () => {
             "type": z.literal("unknown"),
             "message": z.literal(username)
         })
-    
-    const actualDeleteUserResponseBody = await deleteUserResponse.json();
-    expectedDeleteUserResponseSchemaZod.parse(actualDeleteUserResponseBody);
-})
+
+        const actualDeleteUserResponseBody = await deleteUserResponse.json();
+        expectedDeleteUserResponseSchemaZod.parse(actualDeleteUserResponseBody);
+    })
 
 })
