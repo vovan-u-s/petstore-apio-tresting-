@@ -18,15 +18,15 @@ test.describe('User API tests', () => {
         "phone": faker.phone.number(),
         "userStatus": 0
     }
-    // Remove direct usage of request.post here; use postAPI in the test blocks instead.
-    const expectedResponseSchemaZod = z.object({
+
+    const expectedCreateResponseSchemaZod = z.object({
         "code": z.literal(200),
         "type": z.literal("unknown"),
         "message": z.literal(createUserRequestBody.id.toString())
     })
     const username = createUserRequestBody.username;
     const expectedGetUserResponseSchemaZod = z.object({
-    // Remove direct usage of request.get here; use getAPI in the test blocks instead.
+
         "username": z.literal(username),
         "firstName": z.string(),
         "lastName": z.string(),
@@ -35,30 +35,24 @@ test.describe('User API tests', () => {
         "phone": z.string(),
         "userStatus": z.number()
     })
+    // make the putt schema 
+    const expectedPutAPIResponseSchemaZod = z.object({
+        "code": z.literal(200),
+        "type": z.literal("unknown"),
+        "message": z.literal(createUserRequestBody.id.toString())
+    })
+
+    
     const expectedDeleteUserResponseSchemaZod = z.object({
-    // Remove direct usage of request.delete here; use deleteAPI in the test blocks instead.
+       
         "type": z.literal("unknown"),
         "message": z.literal(username)
     })
-
-    test('create a new user', async ({ request }) => {
-
-        await postAPI(request, `${baseURL}/user`, createUserRequestBody, 200, expectedResponseSchemaZod);
-
-
-    })
-    test('get user by username', async ({ request }) => {
+    test('end to end user API test', async ({ request }) => {
+        await postAPI(request, `${baseURL}/user`, createUserRequestBody, 200, expectedCreateResponseSchemaZod);
         await getAPI(request, `${baseURL}/user/${username}`, 200, expectedGetUserResponseSchemaZod);
-
-    })
-
-    test('update user by username', async ({ request }) => {
-        await putAPI(request, `${baseURL}/user/${username}`, createUserRequestBody, 200, expectedResponseSchemaZod);
-    })
-    test('delete user by username', async ({ request }) => {
-
+        await putAPI(request, `${baseURL}/user/${username}`, createUserRequestBody, 200, expectedPutAPIResponseSchemaZod);
         await deleteAPI(request, `${baseURL}/user/${username}`, 200, expectedDeleteUserResponseSchemaZod);
-
     })
 
 })
