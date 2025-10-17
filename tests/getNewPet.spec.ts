@@ -35,8 +35,23 @@ test.describe('Add New Pet API tests', () => {
         })),
         status: z.literal("pending")
     });
+     const expectedPutAPIResponseSchemaZod = z.object({
+        id: z.number(),
+        name: z.string(),
+        photoUrls: z.array(z.string().url()),   
+        category: z.object({    
+            id: z.number(),
+            name: z.string()
+        }),
+        tags: z.array(z.object({
+            id: z.number(),
+            name: z.string()
+        })),
+        status: z.literal("done")
+    });
     test('create a new pet', async ({ request }) => {
         await postAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
         await getAPI(request, `${baseURL}/pet/${createPetRequestBody.id}`, 200, expectedResponseSchemaZod, 5);
+        await putAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
         })
     });
