@@ -3,37 +3,58 @@ import { fa, faker, Faker } from '@faker-js/faker';
 import { z } from 'zod';
 import { env } from 'process';
 import { getAPI, postAPI, deleteAPI, putAPI } from '../utils/apiCallHelper';
+import { get } from 'http';
 
 const baseURL = `${process.env.BASE_URL}`;
 
-const responseGetUserSchemaZod = z.object({
-    code: z.number(),
-    type: z.string(),
-    message: z.string()
+
+
+
+const requestCreateUserBodySchema = z.object({
+    id: z.number().optional(),
+    username: z.string(),
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z.string().email().optional(),
+    password: z.string(),
+    phone: z.string().optional(),
+    userStatus: z.number().optional()
 });
 
-test.beforeEach(async ({ page }) => {
-const requestCreateUserBodySchema = {
-    id: 12312,
-    username: "TestUserNameSalih123",
-    firstName: "randomFirstName",
-    lastName: "randomLastName",
-    email: "random@example.com",
-    password: "Test1234!",
-    phone: "123-456-7890",
-    userStatus: 0
-};
 const responseCreateUserSchemaZod = z.object({
     code: z.number(),
     type: z.string(),
     message: z.string()
 });
-test('create a new user', async ({ page }) => {
-await postAPI(page.request, `${baseURL}/user`, requestCreateUserBodySchema, 200, responseCreateUserSchemaZod, 5);
+const responseGetLoginUserSchemaZod = z.object({
+    code: z.number(),
+    type: z.string(),
+    message: z.string()
 });
+const responseGetLogoutUserSchemaZod = z.object({
+    code: z.number(),
+    type: z.string(),
+    message: z.string()
+});
+const deleteUserResponseSchemaZod = z.object({
+    code: z.number(),
+    type: z.string(),
+    message: z.string()
+});
+  test.beforeEach(async ({ page }) => {
+    test(' create a new user before login', async ({ page }) => {
+    await postAPI(page.request, `${baseURL}/user`, requestCreateUserBodySchema, 200, responseCreateUserSchemaZod, 5);
+});
+})
+
 test.describe('Login and Logout API tests', () => {
 })
 test('logs user into the system', async ({ request }) => {
- await postAPI(request, `${baseURL}/user/login`, { username: "TestUserNameSalih123", password: "Test1234!" }, 200, responseGetUserSchemaZod, 5);
+    await getAPI(request, `${baseURL}/user/login?username=TestUserNameSalih123&password=Test1234!`, 200, responseGetLoginUserSchemaZod);
 })
+test('logs out current logged in user session', async ({ request }) => {
+    await getAPI(request, `${baseURL}/user/logout`, 200, responseGetLogoutUserSchemaZod, 5);
 })
+test.afterEach('get user by username after logout', async ({ request }) => {
+    await deleteAPI(request, `${baseURL}/user/TestUserNameSalih123`, 200, deleteUserResponseSchemaZod, 5);
+});
