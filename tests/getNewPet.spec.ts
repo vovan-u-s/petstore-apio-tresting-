@@ -35,6 +35,20 @@ test.describe('Add New Pet API tests', () => {
         })),
         status: z.literal("pending")
     });
+     const createPutPetRequestBody = {
+        id: 4521,
+        name: faker.animal.type(),
+        photoUrls: [faker.internet.url(), faker.internet.url()],
+        category: {
+            id: 3072,
+            name: faker.animal.type()
+        },
+        tags: [
+            { id: 6330, name: faker.animal.type() },
+            { id: 5622, name: faker.animal.type() }
+        ],
+        status: "done"  
+    };
      const expectedPutAPIResponseSchemaZod = z.object({
         id: z.number(),
         name: z.string(),
@@ -52,6 +66,6 @@ test.describe('Add New Pet API tests', () => {
     test('create a new pet', async ({ request }) => {
         await postAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
         await getAPI(request, `${baseURL}/pet/${createPetRequestBody.id}`, 200, expectedResponseSchemaZod, 5);
-        await putAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
+        await putAPI(request, `${baseURL}/pet`, createPutPetRequestBody, 200, expectedResponseSchemaZod, 5);
         })
     });
