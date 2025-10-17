@@ -24,18 +24,18 @@ test.describe('Add New Pet API tests', () => {
     const expectedResponseSchemaZod = z.object({
         id: z.number(),
         name: z.string(),
-        photoUrls: z.array(z.string().url()),   
+        photoUrls: z.array(z.string().url()),
         category: z.object({
             id: z.number(),
             name: z.string()
-        }), 
+        }),
         tags: z.array(z.object({
             id: z.number(),
-            name: z.string()                
+            name: z.string()
         })),
         status: z.literal("pending")
     });
-     const createPutPetRequestBody = {
+    const createPutPetRequestBody = {
         id: 4521,
         name: faker.animal.type(),
         photoUrls: [faker.internet.url(), faker.internet.url()],
@@ -47,13 +47,13 @@ test.describe('Add New Pet API tests', () => {
             { id: 6330, name: faker.animal.type() },
             { id: 5622, name: faker.animal.type() }
         ],
-        status: "done"  
+        status: "done"
     };
-     const expectedPutAPIResponseSchemaZod = z.object({
+    const expectedPutAPIResponseSchemaZod = z.object({
         id: z.number(),
         name: z.string(),
-        photoUrls: z.array(z.string().url()),   
-        category: z.object({    
+        photoUrls: z.array(z.string().url()),
+        category: z.object({
             id: z.number(),
             name: z.string()
         }),
@@ -63,9 +63,16 @@ test.describe('Add New Pet API tests', () => {
         })),
         status: z.literal("done")
     });
-    test('create a new pet', async ({ request }) => {
-        await postAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
-        await getAPI(request, `${baseURL}/pet/${createPetRequestBody.id}`, 200, expectedResponseSchemaZod, 5);
-        await putAPI(request, `${baseURL}/pet`, createPutPetRequestBody, 200, expectedResponseSchemaZod, 5);
-        })
+    const createDeletePetRequestBodySchema = z.object({
+        code: z.literal(200),
+        type: z.literal("unknown"),
+        message: z.literal(createPutPetRequestBody.id.toString())
     });
+
+test('create a new pet', async ({ request }) => {
+    await postAPI(request, `${baseURL}/pet`, createPetRequestBody, 200, expectedResponseSchemaZod, 5);
+    await getAPI(request, `${baseURL}/pet/${createPetRequestBody.id}`, 200, expectedResponseSchemaZod, 5);
+    await putAPI(request, `${baseURL}/pet`, createPutPetRequestBody, 200, expectedPutAPIResponseSchemaZod, 5);
+    await deleteAPI(request, `${baseURL}/pet/${createPutPetRequestBody.id}`, 200, createDeletePetRequestBodySchema, 5);
+});
+})
