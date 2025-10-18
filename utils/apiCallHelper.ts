@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
 import { ZodTypeAny } from 'zod';
-
+import { faker } from '@faker-js/faker';
 
 /**
  * Explanation: Reusable GET method with retry logic
@@ -144,7 +144,7 @@ export async function deleteAPI(
     // if all retries was unsuccessful, throw an error
     throw new Error('Max retries reached. API call failed.');
 }
-import { faker } from '@faker-js/faker';
+
 
 /**
  * Generates a single random user object
