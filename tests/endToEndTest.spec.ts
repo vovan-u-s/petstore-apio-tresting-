@@ -1,16 +1,17 @@
 import { test } from '@playwright/test';
 import { z } from 'zod';
 import { postAPI, getAPI, deleteAPI } from '../utils/apiCallHelper';
+import { faker } from '@faker-js/faker';
 
 test.describe('End to End API tests', () => {
     const baseURL = `${process.env.BASE_URL}${process.env.API_VERSION}`;
 
          const requestBody = {
-            id: 1380,
-            petId: 0,
-            quantity: 2,
-            shipDate: "2025-10-09T02:11:39.913Z",
-            status: "delivered",
+            id: faker.number.int({ min: 1000, max: 9999 }),
+            petId: faker.number.int({ min: 1000, max: 9999 }),
+            quantity: faker.number.int({ min: 1, max: 10 }),
+            shipDate: faker.date.recent().toISOString(),
+            status: faker.helpers.arrayElement(['placed', 'approved', 'delivered']),
             complete: true
         };
 
@@ -41,7 +42,7 @@ test.describe('End to End API tests', () => {
     test('create, get and delete an order', async ({ request }) => {
    
         await postAPI(request, `${baseURL}/store/order`, requestBody, 200, requestCreateSchema);
-        await getAPI(request, `${baseURL}/store/order/1380`, 200, expectedGetOrderResponseSchemaZod);
-        await deleteAPI(request, `${baseURL}/store/order/1380`, 200, expectedDeleteOrderResponseSchemaZod);
+        await getAPI(request, `${baseURL}/store/order/${requestBody.id}`, 200, expectedGetOrderResponseSchemaZod);
+        await deleteAPI(request, `${baseURL}/store/order/${requestBody.id}`, 200, expectedDeleteOrderResponseSchemaZod);
     })
 })
