@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
 import { ZodTypeAny } from 'zod';
-
+import { faker } from '@faker-js/faker';
 
 /**
  * Explanation: Reusable GET method with retry logic
@@ -144,4 +144,35 @@ export async function deleteAPI(
 
     // if all retries was unsuccessful, throw an error
     throw new Error('Max retries reached. API call failed.');
+}
+
+
+/**
+ * Generates a single random user object
+ * @returns User object with random data
+ */
+export function createRandomUser() {
+    return {
+        id: faker.number.int({ min: 1000, max: 99999 }),
+        username: faker.internet.userName(),
+        firstName: faker.person.firstName(),
+        lastName: faker.person.lastName(),
+        email: faker.internet.email(),
+        password: faker.internet.password(),
+        phone: faker.phone.number(),
+        userStatus: faker.number.int({ min: 0, max: 9999 })
+    };
+}
+
+/**
+ * Creates multiple random user JSON objects
+ * @param count - Number of users to generate
+ * @returns Array of user objects with random data
+ */
+export function createMultipleUserJson(count: number) {
+    const users = [];
+    for (let i = 0; i < count; i++) {
+        users.push(createRandomUser());
+    }
+    return users;
 }
