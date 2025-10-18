@@ -25,7 +25,10 @@ test.describe('Return Pet API tests', () => {
         })
     );
 
-    test('return pet', async ({ request }) => {
-        await getAPI(request, `${baseURL}/pet/findByStatus`, 200, FindByStatusSchema, { status: 'available' }, 5);
+    test('validating of schema length', async ({ request }) => {
+        const response = await getAPI(request, `${baseURL}/store/inventory`, 200, z.record(z.number()), {}, 5);
+        const inventory = response;
+        const totalPets = Object.values(inventory).reduce((acc, curr) => acc + curr, 0);
+        console.log(`Total number of pets in inventory: ${totalPets}`);
     })
 })
