@@ -45,6 +45,7 @@ export async function getAPI(
  * @param requestBody -> the request body to be sent in the API call
  * @param expectedStatusCode -> expected status code of the API response
  * @param expectedSchema -> expected schema of the API response
+ * @param parameters -> query parameters to be sent in the API call (Optional)
  * @param retryCount -> number of times to retry the API call in case of failure (Optional, default is 5)
  * @returns -> the API response
  */
@@ -54,13 +55,14 @@ export async function postAPI(
     requestBody: unknown,
     expectedStatusCode: number,
     expectedSchema: ZodTypeAny,
+    parameters: Record<string, any> = {},
     retryCount: number = 5, // default retry count is 5, if not provided, OPTIONAL parameter
 ): Promise<APIResponse> {
 
     // retry logic because API is not working properly, it will retry 5 times before failing the test
     for (let i = 0; i < retryCount; i++) {
         // make the API call
-        const response = await request.post(url, { data: requestBody });
+        const response = await request.post(url, { data: requestBody, params: parameters });
 
         // validate status code and schema if status code is expected, otherwise retry
         if (response.status() === expectedStatusCode) {
